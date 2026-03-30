@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import android.content.Intent;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -24,6 +26,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        Button settingsButton = findViewById(R.id.settingsButton);
+
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
+
         EditText amountInput = findViewById(R.id.amountInput);
         Spinner fromSpinner = findViewById(R.id.fromCurrency);
         Spinner toSpinner = findViewById(R.id.toCurrency);
