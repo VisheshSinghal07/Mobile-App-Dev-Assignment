@@ -11,6 +11,13 @@
         android:id="@+id/audioBtn"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Audio Player"/>
+        android:text="Audio Player"
+        android:layout_marginBottom="20dp"/>
+
+    <Button
+        android:id="@+id/videoBtn"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Video Player"/>
 
 </LinearLayout>

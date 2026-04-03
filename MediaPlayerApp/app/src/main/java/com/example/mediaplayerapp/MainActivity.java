@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button audioBtn;
+    Button audioBtn, videoBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,12 +17,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         audioBtn = findViewById(R.id.audioBtn);
+        videoBtn = findViewById(R.id.videoBtn);
 
         audioBtn.setOnClickListener(v -> {
 
             Intent intent = new Intent(MainActivity.this,
                     AudioPlayerActivity.class);
+            startActivity(intent);
 
+        });
+
+        videoBtn.setOnClickListener(v -> {
+
+            Intent intent = new Intent(MainActivity.this,
+                    VideoPlayerActivity.class);
             startActivity(intent);
 
         });
