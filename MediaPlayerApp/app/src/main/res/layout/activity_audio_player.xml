@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <Button
+            android:id="@+id/openFileBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open Audio File"
+            android:layout_marginBottom="15dp"/>
+
+        <TextView
+            android:id="@+id/audioName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No audio selected"
+            android:textSize="18sp"
+            android:padding="10dp"
+            android:layout_marginBottom="20dp"/>
+
+        <Button
+            android:id="@+id/playBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Play"
+            android:layout_marginBottom="10dp"/>
+
+        <Button
+            android:id="@+id/pauseBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pause"
+            android:layout_marginBottom="10dp"/>
+
+        <Button
+            android:id="@+id/stopBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stop"
+            android:layout_marginBottom="10dp"/>
+
+        <Button
+            android:id="@+id/restartBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Restart"/>
+        <TextView
+            android:id="@+id/timeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="00:00 / 00:00"
+            android:textSize="16sp"
+            android:layout_marginBottom="20dp"/>
+
+    </LinearLayout>
+
+</ScrollView>
