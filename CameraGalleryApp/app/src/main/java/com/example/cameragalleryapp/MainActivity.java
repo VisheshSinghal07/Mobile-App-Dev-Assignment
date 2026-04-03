@@ -3,6 +3,8 @@ package com.example.cameragalleryapp;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.Button;
@@ -10,18 +12,19 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import android.graphics.Bitmap;
-import android.os.Bundle;
+import androidx.documentfile.provider.DocumentFile;
+
+import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
     Button btnCamera, btnGallery;
+    Uri selectedFolderUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED ||
@@ -43,42 +46,88 @@ public class MainActivity extends AppCompatActivity {
 
         btnCamera.setOnClickListener(v -> {
 
-            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-            try {
-                startActivityForResult(cameraIntent, 101);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, 201);
 
         });
-
 
         btnGallery.setOnClickListener(v -> {
 
-            Intent intent = new Intent(MainActivity.this, GalleryActivity.class);
-            startActivity(intent);
+            String savedUri = getSharedPreferences("FolderPrefs", MODE_PRIVATE)
+                    .getString("folderUri", null);
+
+            if (savedUri == null) {
+
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                startActivityForResult(intent, 200);
+
+            } else {
+
+                Intent intent = new Intent(MainActivity.this, GalleryActivity.class);
+                intent.putExtra("folderUri", savedUri);
+                startActivity(intent);
+
+            }
 
         });
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 101 && resultCode == RESULT_OK) {
+        if (requestCode == 201 && resultCode == RESULT_OK && data != null) {
+
+            selectedFolderUri = data.getData();
+
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(cameraIntent, 101);
+        }
+
+        if (requestCode == 200 && resultCode == RESULT_OK && data != null) {
+
+            selectedFolderUri = data.getData();
+
+            getSharedPreferences("FolderPrefs", MODE_PRIVATE)
+                    .edit()
+                    .putString("folderUri", selectedFolderUri.toString())
+                    .apply();
+
+            Intent intent = new Intent(MainActivity.this, GalleryActivity.class);
+            intent.putExtra("folderUri", selectedFolderUri.toString());
+            startActivity(intent);
+        }
+
+        if (requestCode == 101 && resultCode == RESULT_OK && data != null) {
 
             Bundle extras = data.getExtras();
+            if (extras == null) return;
+
             Bitmap imageBitmap = (Bitmap) extras.get("data");
 
-            MediaStore.Images.Media.insertImage(
-                    getContentResolver(),
-                    imageBitmap,
-                    "CameraImage",
-                    "Image captured from camera"
-            );
+            try {
 
+                DocumentFile pickedDir = DocumentFile.fromTreeUri(this, selectedFolderUri);
+
+                if (pickedDir != null && pickedDir.canWrite()) {
+
+                    DocumentFile newFile = pickedDir.createFile(
+                            "image/jpeg",
+                            "photo_" + System.currentTimeMillis()
+                    );
+
+                    OutputStream out = getContentResolver().openOutputStream(newFile.getUri());
+                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+                    if (out != null) {
+                        out.close();
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
+
 }
