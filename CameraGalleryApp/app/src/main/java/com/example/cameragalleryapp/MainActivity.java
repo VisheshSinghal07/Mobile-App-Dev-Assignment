@@ -18,6 +18,7 @@ import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
+
     Button btnCamera, btnGallery;
     Uri selectedFolderUri;
 
@@ -80,6 +81,11 @@ public class MainActivity extends AppCompatActivity {
 
             selectedFolderUri = data.getData();
 
+            getContentResolver().takePersistableUriPermission(
+                    selectedFolderUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            );
+
             Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(cameraIntent, 101);
         }
@@ -87,6 +93,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 200 && resultCode == RESULT_OK && data != null) {
 
             selectedFolderUri = data.getData();
+
+            getContentResolver().takePersistableUriPermission(
+                    selectedFolderUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            );
 
             getSharedPreferences("FolderPrefs", MODE_PRIVATE)
                     .edit()

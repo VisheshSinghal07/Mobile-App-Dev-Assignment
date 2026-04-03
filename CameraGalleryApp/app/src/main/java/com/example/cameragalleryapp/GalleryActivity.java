@@ -13,7 +13,7 @@ import androidx.documentfile.provider.DocumentFile;
 import java.util.ArrayList;
 
 public class GalleryActivity extends AppCompatActivity {
-
+    
     GridView gridView;
     ArrayList<String> imageList = new ArrayList<>();
     Uri folderUri;
@@ -27,19 +27,22 @@ public class GalleryActivity extends AppCompatActivity {
         gridView = findViewById(R.id.gridView);
         btnChangeFolder = findViewById(R.id.btnChangeFolder);
 
-        String savedUri = getSharedPreferences("FolderPrefs", MODE_PRIVATE)
-                .getString("folderUri", null);
+        String uriString = getIntent().getStringExtra("folderUri");
 
-        if (savedUri == null) {
-
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            startActivityForResult(intent, 300);
-
+        if (uriString != null) {
+            folderUri = Uri.parse(uriString);
         } else {
 
-            folderUri = Uri.parse(savedUri);
-            loadImages();
+            String savedUri = getSharedPreferences("FolderPrefs", MODE_PRIVATE)
+                    .getString("folderUri", null);
 
+            if (savedUri != null) {
+                folderUri = Uri.parse(savedUri);
+            }
+        }
+
+        if (folderUri != null) {
+            loadImages();
         }
 
         btnChangeFolder.setOnClickListener(v -> {
@@ -53,7 +56,7 @@ public class GalleryActivity extends AppCompatActivity {
 
             Intent intent = new Intent(GalleryActivity.this, ImageDetailActivity.class);
             intent.putExtra("path", imageList.get(position));
-            startActivity(intent);
+            startActivityForResult(intent, 400);
 
         });
     }
@@ -85,7 +88,11 @@ public class GalleryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 300 && resultCode == RESULT_OK) {
+        if (requestCode == 400 && resultCode == RESULT_OK) {
+            loadImages();
+        }
+
+        if (requestCode == 300 && resultCode == RESULT_OK && data != null) {
 
             folderUri = data.getData();
 
@@ -97,4 +104,6 @@ public class GalleryActivity extends AppCompatActivity {
             loadImages();
         }
     }
+
+
 }
