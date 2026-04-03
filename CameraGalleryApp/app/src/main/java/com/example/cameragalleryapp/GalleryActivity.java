@@ -1,24 +1,65 @@
 package com.example.cameragalleryapp;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.widget.AdapterView;
+import android.widget.GridView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import java.util.ArrayList;
 
 public class GalleryActivity extends AppCompatActivity {
+
+    GridView gridView;
+    ArrayList<String> imageList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_gallery);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        gridView = findViewById(R.id.gridView);
+
+        Cursor cursor = getContentResolver().query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Images.Media._ID},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+
+            while (cursor.moveToNext()) {
+
+                long id = cursor.getLong(columnIndex);
+
+                Uri contentUri = Uri.withAppendedPath(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        "" + id
+                );
+
+                imageList.add(contentUri.toString());
+            }
+
+            cursor.close();
+        }
+
+        ImageAdapter adapter = new ImageAdapter(this, imageList);
+        gridView.setAdapter(adapter);
+
+        gridView.setOnItemClickListener((AdapterView<?> parent, android.view.View view, int position, long id) -> {
+
+            Intent intent = new Intent(GalleryActivity.this, ImageDetailActivity.class);
+            intent.putExtra("path", imageList.get(position));
+            startActivity(intent);
+
         });
     }
 }
